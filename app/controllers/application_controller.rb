@@ -3,6 +3,16 @@ class ApplicationController < ActionController::API
     render json: { error: 'not_found' }
   end
 
+  def success_response(data, status)
+    response = { status: 'success', data: data, error: nil }
+    render json: response, status: status
+  end
+
+  def fail_response(message, status)
+    response = { status: 'fail', data: nil, error: { message: message } }
+    render json: response, status: status
+  end
+
   def authorize_request
     header = request.headers['Authorization']
     header = header.split(' ').last if header

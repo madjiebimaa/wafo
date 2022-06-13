@@ -1,36 +1,23 @@
 class UsersController < ApplicationController
-  before_action :authorize_request, except: :create
+  before_action :authorize_request
   before_action :find_user, except: %i[create index]
 
   # GET /users
   def index
     @users = User.all
-    render json: @users, status: :ok
+    success_response(@users, :ok)
   end
 
   # GET /users/{username}
   def show
-    render json: @user, status: :ok
-  end
-
-  # POST /users
-  def create
-    puts user_params
-    @user = User.new(user_params)
-    puts @user
-    if @user.save
-      render json: @user, status: :created
-    else
-      render json: { errors: @user.errors.full_messages },
-             status: :unprocessable_entity
-    end
+    success_response(@user, :ok)
   end
 
   # PUT /users/{username}
   def update
     unless @user.update(user_params)
-      render json: { errors: @user.errors.full_messages },
-             status: :unprocessable_entity
+      error_message = @user.errors.full_messages
+      fail_response(error_message, :unprocessable_entity)
     end
   end
 
@@ -42,9 +29,10 @@ class UsersController < ApplicationController
   private
 
   def find_user
-    @user = User.find_by_username!(params[:_username])
+    @user = User.find_by_username(params[:_username])
   rescue ActiveRecord::RecordNotFound
-    render json: { errors: 'User not found' }, status: :not_found
+    error_message = 'User not found'
+    fail_response(error_message, :not_found)
   end
 
   def user_params

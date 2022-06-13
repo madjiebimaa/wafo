@@ -7,4 +7,16 @@ class User < ApplicationRecord
   validates :password,
             length: { minimum: 6 },
             if: -> { new_record? || !password.nil? }
+
+  def find_by_id(id)
+    find(id).take
+  end
+
+  def find_by_username(username)
+    find_by(username: username)
+  end
+
+  def find_by_email(email)
+    find_by(email: email)
+  end
 end
