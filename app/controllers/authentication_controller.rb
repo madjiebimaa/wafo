@@ -1,5 +1,5 @@
 class AuthenticationController < ApplicationController
-  before_action :authorize_request, except: [:login, :register]
+  before_action :authorize_request, except: %i[login register]
 
   # POST /auth/register
   def register
@@ -29,7 +29,8 @@ class AuthenticationController < ApplicationController
   private
 
   def register_params
-    params.permit(:username, :email, :password)
+    default_username = params[:email].split('@', 2)[0]
+    params.permit(:username, :email, :password).with_defaults(username: default_username)
   end
 
   def login_params

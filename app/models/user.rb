@@ -13,10 +13,10 @@ class User < ApplicationRecord
   end
 
   def find_by_username(username)
-    find_by(username: username)
+    find_by(username: username).take
   end
 
   def find_by_email(email)
-    find_by(email: email)
+    find_by(email: email).take
   end
 end
