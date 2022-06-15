@@ -8,15 +8,15 @@ class User < ApplicationRecord
             length: { minimum: 6 },
             if: -> { new_record? || !password.nil? }
 
-  def find_by_id(id)
+  def self.find_by_id(id)
     find(id).take
   end
 
-  def find_by_username(username)
+  def self.find_by_username(username)
     find_by(username: username).take
   end
 
-  def find_by_email(email)
+  def self.find_by_email(email)
     find_by(email: email).take
   end
 end

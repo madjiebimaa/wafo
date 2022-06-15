@@ -1,4 +1,5 @@
 class MerchantsController < ApplicationController
+  before_action :authorize_request
   before_action :find_merchant, except: %i[index create]
 
   def index

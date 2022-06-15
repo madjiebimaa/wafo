@@ -1,7 +1,4 @@
 class ApplicationController < ActionController::API
-  def not_found
-    render json: { error: 'not_found' }
-  end
 
   def success_response(data, status)
     response = { status: 'success', data: data, error: nil }
@@ -13,16 +10,20 @@ class ApplicationController < ActionController::API
     render json: response, status: status
   end
 
+  def not_found
+    fail_response('endpoint not found', :not_found)
+  end
+
   def authorize_request
     header = request.headers['Authorization']
-    header = header.split(' ').last if header
+    token = header.split(' ').last if header
     begin
-      @decoded = JsonWebToken.decode(header)
-      @current_user = User.find(@decoded[:user_id])
+      @decoded = JsonWebToken.decode(token)
+      @current_user = User.find_by_id(@decoded[:user_id])
     rescue ActiveRecord::RecordNotFound => e
-      render json: { errors: e.message }, status: :unauthorized
+      fail_response(e.message, :unauthorized)
     rescue JWT::DecodeError => e
-      render json: { errors: e.message }, status: :unauthorized
+      fail_response(e.message, :unauthorized)
     end
   end
 end
