@@ -2,7 +2,16 @@ class MerchantsController < ApplicationController
   before_action :find_merchant, except: %i[index create]
 
   def index
-    @merchants = Merchant.all
+    @merchants = []
+    # TODO: need improvement for handling the combination of a query parameter
+    if params[:available]
+      @merchants = Merchant.available_merchants
+    elsif params[:name]
+      @merchants = Merchant.find_by_name(params[:name])
+    else
+      @merchants = Merchant.all
+    end
+
     success_response(@merchants, :ok)
   end
 
@@ -18,19 +27,25 @@ class MerchantsController < ApplicationController
 
   def show_items
     items = @merchant.find_items
+    if items.empty?
+      fail_message = "items not found for merchant id #{@merchant.id}"
+      fail_response(fail_message, :not_found)
+      return
+    end
+
     success_response(items, :ok)
   end
 
   def create_item
-    puts "Merchant ID: #{@merchant.id}"
     @merchant.create_item(item_params)
-    success_message = "success create item for merchant with id #{@merchant.id}"
+    success_message = "success create item for merchant id #{@merchant.id}"
     success_response({ message: success_message }, :created)
   end
 
   def update_item_stock
     @merchant.update_item_stock(params[:item_id], params[:stock])
-    success_response({}, :no_content)
+    success_message = "success update item stock for merchant id #{@merchant.id}"
+    success_response({ message: success_message }, :ok)
   end
 
   private

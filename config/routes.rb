@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   post '/merchants', to: 'merchants#create'
   get '/merchants/:merchant_id/items', to: 'merchants#show_items'
   post '/merchants/:merchant_id/items', to: 'merchants#create_item'
-  patch '/merchants/:merchant_id/items/:item_id', to: 'merchants#update_item_stock'
+  patch '/merchants/:merchant_id/items/:item_id/stock', to: 'merchants#update_item_stock'
 
   get '/*a', to: 'application#not_found'
 end

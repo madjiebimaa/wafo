@@ -1,10 +1,6 @@
 class Merchant < ApplicationRecord
   has_many :items
 
-  def find_by_name(name)
-    find_by(name: name).take
-  end
-
   def create_item(item)
     items.create(item)
   end
@@ -20,12 +16,16 @@ class Merchant < ApplicationRecord
   end
 
   def available?
-    !merchant.items.empty?
+    !items.empty?
   end
 
-  def available_merchants
-    merchants = all
+  def self.find_by_name(name)
+    find_by(name: name)
+  end
+
+  def self.available_merchants
     available_merchants = []
-    merchants.each { |merchant| available_merchants.push(merchant) if merchant.available? }
+    all.each { |merchant| available_merchants.push(merchant) if merchant.available? }
+    available_merchants
   end
 end
