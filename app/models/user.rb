@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
+  
+  belongs_to :role, polymorphic: true
 
   validates :email, presence: true, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
@@ -9,7 +11,7 @@ class User < ApplicationRecord
             if: -> { new_record? || !password.nil? }
 
   def self.find_by_id(id)
-    find(id).take
+    find(id)
   end
 
   def self.find_by_username(username)

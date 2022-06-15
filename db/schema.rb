@@ -10,9 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_14_112903) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_15_134748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "admins", force: :cascade do |t|
+    t.string "firstname"
+    t.string "lastname"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string "firstname"
+    t.string "lastname"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "items", force: :cascade do |t|
     t.bigint "merchant_id"
@@ -43,6 +59,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_14_112903) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role_type"
+    t.bigint "role_id"
+    t.index ["role_type", "role_id"], name: "index_users_on_role"
   end
 
   add_foreign_key "items", "merchants"

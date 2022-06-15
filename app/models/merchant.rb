@@ -1,4 +1,5 @@
 class Merchant < ApplicationRecord
+  has_one :user, as: :role
   has_many :items
 
   def create_item(item)
