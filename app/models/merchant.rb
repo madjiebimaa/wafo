@@ -7,7 +7,7 @@ class Merchant < ApplicationRecord
   end
 
   def update_item_stock(item_id, stock)
-    item = items.find_by_id(item_id)
+    item = items.find(item_id)
     item.stock = stock
     item.save!
   end
@@ -16,17 +16,13 @@ class Merchant < ApplicationRecord
     items.all
   end
 
-  def available?
+  def ready?
     !items.empty?
   end
 
-  def self.find_by_name(name)
-    find_by(name: name)
-  end
-
-  def self.available_merchants
-    available_merchants = []
-    all.each { |merchant| available_merchants.push(merchant) if merchant.available? }
-    available_merchants
+  def self.ready_merchants
+    ready_merchants = []
+    all.each { |merchant| ready_merchants.push(merchant) if merchant.ready? }
+    ready_merchants
   end
 end

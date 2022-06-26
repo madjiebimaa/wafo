@@ -1,17 +1,21 @@
 Rails.application.routes.draw do
-  resources :users, param: :_username, except: [:create]
-  # resources :merchants, only: [:create] do
-  #   resources :items, only: %i[create update]
-  # end
+  scope :auth do
+    post :register, to: 'authentication#register'
+    post :login, to: 'authentication#login'
+  end
 
-  post '/auth/register', to: 'authentication#register'
-  post '/auth/login', to: 'authentication#login'
+  resources :users, param: :username, only: %i[index show] do
+    post :roles, param: :username, to: 'users#add_role'
+  end
 
-  get '/merchants', to: 'merchants#index'
-  post '/merchants', to: 'merchants#create'
-  get '/merchants/:merchant_id/items', to: 'merchants#show_items'
-  post '/merchants/:merchant_id/items', to: 'merchants#create_item'
-  patch '/merchants/:merchant_id/items/:item_id/stock', to: 'merchants#update_item_stock'
+  resources :merchants, only: [:index] do
+    get :items, to: 'merchants#show_items'
+    post :items, to: 'merchants#create_item'
+
+    resources :items, only: :nothing do
+      patch :stock, param: :item_id, to: 'merchants#update_item_stock'
+    end
+  end
 
   get '/*a', to: 'application#not_found'
 end

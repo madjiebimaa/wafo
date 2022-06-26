@@ -15,17 +15,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_15_134748) do
   enable_extension "plpgsql"
 
   create_table "admins", force: :cascade do |t|
-    t.string "firstname"
+    t.string "firstname", null: false
     t.string "lastname"
-    t.string "phone_number"
+    t.string "phone_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "customers", force: :cascade do |t|
-    t.string "firstname"
+    t.string "firstname", null: false
     t.string "lastname"
-    t.string "phone_number"
+    t.string "phone_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

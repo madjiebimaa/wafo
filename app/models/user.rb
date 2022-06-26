@@ -1,7 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
-  
-  belongs_to :role, polymorphic: true
+  belongs_to :role, polymorphic: true, optional: true
 
   validates :email, presence: true, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
@@ -9,16 +8,30 @@ class User < ApplicationRecord
   validates :password,
             length: { minimum: 6 },
             if: -> { new_record? || !password.nil? }
+  validates :role_id, presence: false
+  validates :role_type, presence: false
 
-  def self.find_by_id(id)
-    find(id)
+  def admin_role?
+    role_type == "Admin"
   end
 
-  def self.find_by_username(username)
-    find_by(username: username).take
+  def customer_role?
+    role_type == "Customer"
   end
 
-  def self.find_by_email(email)
-    find_by(email: email).take
+  def merchant_role?
+    role_type == "Merchant"
+  end
+
+  def as_admin(admin_params)
+    update(role: Admin.new(admin_params))
+  end
+
+  def as_customer(customer_params)
+    update(role: Customer.new(customer_params))
+  end
+
+  def as_merchant(merchant_params)
+    update(role: Merchant.new(merchant_params))
   end
 end

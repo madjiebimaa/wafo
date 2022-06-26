@@ -1,28 +1,27 @@
 class AuthenticationController < ApplicationController
   before_action :authorize_request, except: %i[login register]
 
-  # POST /auth/register
   def register
     @user = User.new(register_params)
     if @user.save
-      success_response(@user, :created)
+      success_response(@user, :created, nil)
+      # UserSerializer.new(@user).as_json https://github.com/rails-api/active_model_serializers/tree/0-10-stable
     else
       error_message = @user.errors.full_messages
-      fail_response(error_message, :unprocessable_entity)
+      fail_response(:unprocessable_entity, error_message)
     end
   end
 
-  # POST /auth/login
   def login
-    @user = User.find_by_email(params[:email])
+    @user = User.find_by(email: params[:email])
     if @user&.authenticate(params[:password])
       token = JsonWebToken.encode(user_id: @user.id)
       time = Time.now + 24.hours.to_i
       time_formatted = time.strftime("%m-%d-%Y %H:%M")
-      success_response({ token: token, exp: time_formatted, username: @user.username }, :ok)
+      success_response({ token: token, exp: time_formatted, username: @user.username }, :ok, nil)
     else
       error_message = 'User unauthorized'
-      fail_response(error_message, :unauthorized)
+      fail_response(:unauthorized, error_message)
     end
   end
 

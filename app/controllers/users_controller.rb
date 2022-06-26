@@ -1,41 +1,51 @@
 class UsersController < ApplicationController
   before_action :authorize_request
-  before_action :find_user, except: %i[create index]
 
-  # GET /users
   def index
     @users = User.all
-    success_response(@users, :ok)
+    success_response(@users, :ok, nil)
   end
 
-  # GET /users/{username}
   def show
-    success_response(@user, :ok)
+    @user = User.find_by(username: params[:username])
+    success_response(@user, :ok, nil)
   end
 
-  # PUT /users/{username}
-  def update
-    unless @user.update(user_params)
-      error_message = @user.errors.full_messages
-      fail_response(error_message, :unprocessable_entity)
+  def add_role
+    # ! FIX: user hanya dapat memiliki satu role
+    role = params[:role]
+    case role
+    when 'Admin'
+      @current_user.as_admin(admin_params)
+    when 'Customer'
+      @current_user.as_customer(customer_params)
+    when 'Merchant'
+      @current_user.as_merchant(merchant_params)
+    else
+      error_message = 'user role tidak diketahui'
+      fail_response(:unprocessable_entity, error_message)
+      return
     end
-  end
 
-  # DELETE /users/{username}
-  def destroy
-    @user.destroy
+    success_message = "berhasil menambahkan role user: #{@current_user.username} sebagai #{role.downcase}"
+    success_response(nil, :created, success_message)
   end
 
   private
 
-  def find_user
-    @user = User.find_by_username(params[:_username])
-  rescue ActiveRecord::RecordNotFound
-    error_message = 'User not found'
-    fail_response(error_message, :not_found)
-  end
-
   def user_params
     params.permit(:username, :email, :password)
+  end
+
+  def admin_params
+    params.permit(:firstname, :lastname, :phone_number)
+  end
+
+  def customer_params
+    params.permit(:firstname, :lastname, :phone_number)
+  end
+
+  def merchant_params
+    params.permit(:name, :address, :phone_number, :image_url)
   end
 end

@@ -3,63 +3,49 @@ class MerchantsController < ApplicationController
   before_action :find_merchant, except: %i[index create]
 
   def index
-    @merchants = []
-    # TODO: need improvement for handling the combination of a query parameter
-    if params[:available]
-      @merchants = Merchant.available_merchants
+    @merchants = Merchant.all
+    if params[:ready]
+      @merchants = Merchant.ready_merchants
     elsif params[:name]
-      @merchants = Merchant.find_by_name(params[:name])
-    else
-      @merchants = Merchant.all
+      @merchants = Merchant.where(name: params[:name])
     end
 
-    success_response(@merchants, :ok)
-  end
-
-  def create
-    @merchant = Merchant.new(merchant_params)
-    if @merchant.save
-      success_response(@merchant, :created)
-    else
-      error_message = @merchant.errors.full_messages
-      fail_response(error_message, :unprocessable_entity)
-    end
+    success_response(@merchants, :ok, nil)
   end
 
   def show_items
     items = @merchant.find_items
     if items.empty?
-      fail_message = "items not found for merchant id #{@merchant.id}"
-      fail_response(fail_message, :not_found)
+      fail_message = "merchant dengan id: #{@merchant.id} tidak memiliki item yang sedang dipasarkan"
+      fail_response(:not_found, fail_message)
       return
     end
 
-    success_response(items, :ok)
+    success_response(items, :ok, nil)
   end
 
   def create_item
     @merchant.create_item(item_params)
-    success_message = "success create item for merchant id #{@merchant.id}"
-    success_response({ message: success_message }, :created)
+    success_message = "merchant dengan id #{@merchant.id} berhasil menambahkan item"
+    success_response(nil, :created, success_message)
   end
 
   def update_item_stock
+    puts params
+    puts "MERCHANT ID: #{@merchant.id}"
+    puts "ITEM ID: #{params[:item_id]}"
     @merchant.update_item_stock(params[:item_id], params[:stock])
-    success_message = "success update item stock for merchant id #{@merchant.id}"
-    success_response({ message: success_message }, :ok)
+    success_message = "merchant dengan id #{@merchant.id} berhasil mengupdate stock item"
+    success_response(nil, :ok, success_message)
   end
 
   private
 
   def find_merchant
-    @merchant = Merchant.find_by_id(params[:merchant_id])
+    @merchant = Merchant.find(params[:merchant_id])
   rescue ActiveRecord::RecordNotFound
     error_message = 'User not found'
-    fail_response(error_message, :not_found)
-  end
-
-  def merchant_params
-    params.permit(:name, :address, :phone_number, :image_url)
+    fail_response(:not_found, error_message)
   end
 
   def item_params
