@@ -10,10 +10,6 @@ class ApplicationController < ActionController::API
   end
 
   def not_found
-    puts ENV["DB_USERNAME"]
-    puts ENV["DB_PASSWORD"]
-    puts ENV["DB_HOST"]
-    puts ENV["DB_PORT"]
     fail_response(:not_found, 'endpoint not found')
   end
 
