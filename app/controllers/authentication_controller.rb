@@ -4,8 +4,8 @@ class AuthenticationController < ApplicationController
   def register
     @user = User.new(register_params)
     if @user.save
-      success_response(@user, :created, nil)
-      # UserSerializer.new(@user).as_json https://github.com/rails-api/active_model_serializers/tree/0-10-stable
+      serialized_user = UserSerializer.new(@user).as_json
+      success_response(serialized_user, :created, nil)
     else
       error_message = @user.errors.full_messages
       fail_response(:unprocessable_entity, error_message)
@@ -20,7 +20,7 @@ class AuthenticationController < ApplicationController
       time_formatted = time.strftime("%m-%d-%Y %H:%M")
       success_response({ token: token, exp: time_formatted, username: @user.username }, :ok, nil)
     else
-      error_message = 'User unauthorized'
+      error_message = 'user tidak terautentikasi'
       fail_response(:unauthorized, error_message)
     end
   end

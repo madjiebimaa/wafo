@@ -10,7 +10,7 @@ class ApplicationController < ActionController::API
   end
 
   def not_found
-    fail_response(:not_found, 'endpoint not found')
+    fail_response(:not_found, 'endpoint tidak ditemukan')
   end
 
   def authorize_request

@@ -10,7 +10,9 @@ class MerchantsController < ApplicationController
       @merchants = Merchant.where(name: params[:name])
     end
 
-    success_response(@merchants, :ok, nil)
+    serialized_merchants = ActiveModelSerializers::SerializableResource.new(@merchants,
+                                                                            { each_serializer: MerchantSerializer }).as_json
+    success_response(serialized_merchants, :ok, nil)
   end
 
   def show_items
@@ -21,7 +23,9 @@ class MerchantsController < ApplicationController
       return
     end
 
-    success_response(items, :ok, nil)
+    serialized_items = ActiveModelSerializers::SerializableResource.new(items,
+                                                                        { each_serializer: ItemSerializer }).as_json
+    success_response(serialized_items, :ok, nil)
   end
 
   def create_item
@@ -31,9 +35,6 @@ class MerchantsController < ApplicationController
   end
 
   def update_item_stock
-    puts params
-    puts "MERCHANT ID: #{@merchant.id}"
-    puts "ITEM ID: #{params[:item_id]}"
     @merchant.update_item_stock(params[:item_id], params[:stock])
     success_message = "merchant dengan id #{@merchant.id} berhasil mengupdate stock item"
     success_response(nil, :ok, success_message)
@@ -44,7 +45,7 @@ class MerchantsController < ApplicationController
   def find_merchant
     @merchant = Merchant.find(params[:merchant_id])
   rescue ActiveRecord::RecordNotFound
-    error_message = 'User not found'
+    error_message = "merchant dengan id #{@merchant.id} tidak ditemukan"
     fail_response(:not_found, error_message)
   end
 

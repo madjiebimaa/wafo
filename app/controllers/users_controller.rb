@@ -3,12 +3,15 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
-    success_response(@users, :ok, nil)
+    serialized_users = ActiveModelSerializers::SerializableResource.new(@users,
+                                                                        { each_serializer: UserSerializer }).as_json
+    success_response(serialized_users, :ok, nil)
   end
 
   def show
     @user = User.find_by(username: params[:username])
-    success_response(@user, :ok, nil)
+    serialized_user = UserSerializer.new(@user).as_json
+    success_response(serialized_user, :ok, nil)
   end
 
   def add_role

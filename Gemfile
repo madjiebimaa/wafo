@@ -40,8 +40,10 @@ gem "bootsnap", require: false
 gem 'jwt'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
-# Use env variables
+# Use Env variables
 gem 'dotenv-rails', groups: [:development, :test]
+# Use Serializers for selecting attributes for models that want to appear
+gem 'active_model_serializers', '~> 0.10.0'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
