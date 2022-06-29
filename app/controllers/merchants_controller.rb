@@ -1,13 +1,18 @@
 class MerchantsController < ApplicationController
   before_action :authorize_request
+  before_action :is_merchant, except: %i[index]
+  before_action :is_customer, only: %i[index]
   before_action :find_merchant, except: %i[index create]
 
   def index
     @merchants = Merchant.all
+
     if params[:ready]
-      @merchants = Merchant.ready_merchants
-    elsif params[:name]
-      @merchants = Merchant.where(name: params[:name])
+      @merchants = @merchants.ready_merchants
+    end
+
+    if params[:name]
+      @merchants = @merchants.where(name: params[:name])
     end
 
     serialized_merchants = ActiveModelSerializers::SerializableResource.new(@merchants,
