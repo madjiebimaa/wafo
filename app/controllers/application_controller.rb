@@ -20,9 +20,21 @@ class ApplicationController < ActionController::API
       @decoded = JsonWebToken.decode(token)
       @current_user = User.find(@decoded[:user_id])
     rescue ActiveRecord::RecordNotFound => e
-      fail_response(e.message, :unauthorized)
+      fail_response(:unauthorized, e.message)
     rescue JWT::DecodeError => e
-      fail_response(e.message, :unauthorized)
+      fail_response(:unauthorized, e.message)
     end
+  end
+
+  def is_admin
+    fail_response(:forbidden, 'user tidak memiliki role sebagai admin') if @current_user.role_type == 'admin'
+  end
+
+  def is_customer
+    fail_response(:forbidden, 'user tidak memiliki role sebagai customer') if @current_user.role_type == 'customer'
+  end
+
+  def is_merchant
+    fail_response(:forbidden, 'user tidak memiliki role sebagai merchant') if @current_user.role_type == "merchant"
   end
 end
