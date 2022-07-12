@@ -15,7 +15,7 @@ class CustomersController < ApplicationController
 
   def destroy_cart_item
     @cart_item = @current_customer.cart.find(params[:cart_item_id])
-    
+
     return fail_response(:not_found, 'cart item tidak ditemukan') if @cart_item == nil
 
     @cart_item.destroy
