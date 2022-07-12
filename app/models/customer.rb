@@ -2,8 +2,8 @@ class Customer < ApplicationRecord
   has_one :user, as: :role
   has_one :cart
 
-  def create_cart
-    cart.create
+  def create_cart(customer_id)
+    Cart.create(customer_id: customer_id)
   end
 
   def add_item_to_cart(item_id, quantity)

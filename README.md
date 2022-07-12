@@ -79,10 +79,17 @@ Install all required bundle:
 ```
 bundle install
 ```
+Run the create database:
+```
+rails db:create
+```
 Run the migration:
 ```
-rake db:migrate
+rails db:migrate
 ```
+Run the insert initial data to the database:
+```
+rails db:seed
 Run the server:
 ``` 
 rails s
