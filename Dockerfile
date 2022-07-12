@@ -11,5 +11,8 @@ RUN gem install rails bundler
 #RUN chown -R user:user /opt/app
 WORKDIR /opt/app
 
+# Exposing port so it's accessible outside
+EXPOSE 3000
+
 # Run a shell
 CMD ["/bin/sh"]

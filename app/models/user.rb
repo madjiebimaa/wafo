@@ -11,18 +11,6 @@ class User < ApplicationRecord
   validates :role_id, presence: false
   validates :role_type, presence: false
 
-  def admin_role?
-    role_type == "Admin"
-  end
-
-  def customer_role?
-    role_type == "Customer"
-  end
-
-  def merchant_role?
-    role_type == "Merchant"
-  end
-
   def as_admin(admin_params)
     update(role: Admin.new(admin_params))
   end

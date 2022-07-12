@@ -1,15 +1,25 @@
 class UsersController < ApplicationController
   before_action :authorize_request
+  before_action :admin?, only: %i[index show]
 
   def index
     @users = User.all
     serialized_users = ActiveModelSerializers::SerializableResource.new(@users,
                                                                         { each_serializer: UserSerializer }).as_json
+
     success_response(serialized_users, :ok, nil)
   end
 
   def show
-    @user = User.find_by(username: params[:username])
+    username = params[:username]
+    @user = User.find_by(username: username)
+
+    if @user.nil?
+      fail_message = "user dengan username #{username} tidak dapat ditemukan"
+      fail_response(:not_found, fail_message)
+      return
+    end
+
     serialized_user = UserSerializer.new(@user).as_json
     success_response(serialized_user, :ok, nil)
   end
@@ -17,6 +27,7 @@ class UsersController < ApplicationController
   def add_role
     # ! FIX: user hanya dapat memiliki satu role
     role = params[:role]
+
     case role
     when 'Admin'
       @current_user.as_admin(admin_params)
@@ -26,20 +37,16 @@ class UsersController < ApplicationController
     when 'Merchant'
       @current_user.as_merchant(merchant_params)
     else
-      error_message = 'user role tidak diketahui'
-      fail_response(:unprocessable_entity, error_message)
+      fail_message = 'user role tidak diketahui'
+      fail_response(:unprocessable_entity, fail_message)
       return
     end
 
-    success_message = "berhasil menambahkan role user: #{@current_user.username} sebagai #{role.downcase}"
+    success_message = "berhasil menambahkan role #{role.downcase} kepada user dengan username #{@current_user.username}"
     success_response(nil, :created, success_message)
   end
 
   private
-
-  def user_params
-    params.permit(:username, :email, :password)
-  end
 
   def admin_params
     params.permit(:firstname, :lastname, :phone_number)

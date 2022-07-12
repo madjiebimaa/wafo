@@ -10,7 +10,7 @@ class ApplicationController < ActionController::API
   end
 
   def not_found
-    fail_response(:not_found, 'endpoint tidak ditemukan')
+    fail_response(:not_found, 'endpoint tidak dapat ditemukan')
   end
 
   def authorize_request
@@ -26,15 +26,17 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def is_admin
-    fail_response(:forbidden, 'user tidak memiliki role sebagai admin') if @current_user.role_type == 'admin'
+  def admin?
+    return fail_response(:forbidden, 'user tidak memiliki role sebagai admin') unless @current_user.role_type == 'Admin'
   end
 
-  def is_customer
-    fail_response(:forbidden, 'user tidak memiliki role sebagai customer') if @current_user.role_type == 'customer'
+  def customer?
+    return fail_response(:forbidden,
+                         'user tidak memiliki role sebagai customer') unless @current_user.role_type == 'Customer'
   end
 
-  def is_merchant
-    fail_response(:forbidden, 'user tidak memiliki role sebagai merchant') if @current_user.role_type == "merchant"
+  def merchant?
+    return fail_response(:forbidden,
+                         'user tidak memiliki role sebagai merchant') unless @current_user.role_type == 'Merchant'
   end
 end

@@ -14,9 +14,14 @@ class CustomersController < ApplicationController
   end
 
   def destroy_cart_item
-    @cart_item = @current_customer.cart.find(params[:cart_item_id])
+    cart_item_id = params[:cart_item_id]
+    @cart_item = @current_customer.cart.find(cart_item_id)
 
-    return fail_response(:not_found, 'cart item tidak ditemukan') if @cart_item == nil
+    if @cart_item.nil?
+      fail_message = "cart item dengan id #{cart_item_id} tidak ditemukan"
+      fail_response(:not_found, fail_message)
+      return
+    end
 
     @cart_item.destroy
     success_response(nil, :ok, "cart item dengan id #{@cart_item.id} berhasil dihapus")

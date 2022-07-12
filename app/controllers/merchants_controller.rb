@@ -1,19 +1,17 @@
 class MerchantsController < ApplicationController
   before_action :authorize_request
-  before_action :is_merchant, except: %i[index]
-  before_action :is_customer, only: %i[index]
+  before_action :merchant?, only: %i[create_item update_item_stock]
+  before_action :customer?, only: %i[index show_items]
   before_action :find_merchant, except: %i[index create]
 
   def index
     @merchants = Merchant.all
 
-    if params[:ready]
-      @merchants = @merchants.ready_merchants
-    end
+    ready = params[:ready]
+    @merchants = @merchants.ready_merchants if ready
 
-    if params[:name]
-      @merchants = @merchants.where(name: params[:name])
-    end
+    name = params[:name]
+    @merchants = @merchants.where(name: name) if name
 
     serialized_merchants = ActiveModelSerializers::SerializableResource.new(@merchants,
                                                                             { each_serializer: MerchantSerializer }).as_json
@@ -50,8 +48,8 @@ class MerchantsController < ApplicationController
   def find_merchant
     @merchant = Merchant.find(params[:merchant_id])
   rescue ActiveRecord::RecordNotFound
-    error_message = "merchant dengan id #{@merchant.id} tidak ditemukan"
-    fail_response(:not_found, error_message)
+    fail_message = "merchant dengan id #{@merchant.id} tidak dapat ditemukan"
+    fail_response(:not_found, fail_message)
   end
 
   def item_params

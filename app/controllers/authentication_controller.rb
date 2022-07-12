@@ -7,20 +7,28 @@ class AuthenticationController < ApplicationController
       serialized_user = UserSerializer.new(@user).as_json
       success_response(serialized_user, :created, nil)
     else
-      error_message = @user.errors.full_messages
-      fail_response(:unprocessable_entity, error_message)
+      fail_message = @user.errors.full_messages
+      fail_response(:unprocessable_entity, fail_message)
     end
   end
 
   def login
+    email = params[:email]
     @user = User.find_by(email: params[:email])
+
+    if @user.nil?
+      fail_message = "user dengan email #{email} tidak dapat ditemukan"
+      fail_response(:not_found, fail_message)
+      return
+    end
+
     if @user&.authenticate(params[:password])
       token = JsonWebToken.encode(user_id: @user.id)
       time = Time.now + 24.hours.to_i
       time_formatted = time.strftime("%m-%d-%Y %H:%M")
       success_response({ token: token, exp: time_formatted, username: @user.username }, :ok, nil)
     else
-      error_message = 'user tidak terautentikasi'
+      error_message = 'username atau password salah'
       fail_response(:unauthorized, error_message)
     end
   end
