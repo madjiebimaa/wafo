@@ -7,11 +7,12 @@ class MerchantsController < ApplicationController
   def index
     @merchants = Merchant.all
 
+    name = params[:name]
+    @merchants = Merchant.where(name: name) if name
+    
     ready = params[:ready]
     @merchants = @merchants.ready_merchants if ready
 
-    name = params[:name]
-    @merchants = @merchants.where(name: name) if name
 
     serialized_merchants = ActiveModelSerializers::SerializableResource.new(@merchants,
                                                                             { each_serializer: MerchantSerializer }).as_json

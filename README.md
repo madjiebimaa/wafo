@@ -90,6 +90,7 @@ rails db:migrate
 Run the insert initial data to the database:
 ```
 rails db:seed
+```
 Run the server:
 ``` 
 rails s

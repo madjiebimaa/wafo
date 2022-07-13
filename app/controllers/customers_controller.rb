@@ -5,7 +5,7 @@ class CustomersController < ApplicationController
   def index
     @customers = Customer.all
 
-    serialized_customers = ActiveModelSerializers::SerializableResource.new(@admins,
+    serialized_customers = ActiveModelSerializers::SerializableResource.new(@customers,
                                                                             { each_serializer: CustomerSerializer }).as_json
     success_response(serialized_customers, :ok, nil)
   end

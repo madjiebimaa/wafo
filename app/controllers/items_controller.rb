@@ -11,6 +11,7 @@ class ItemsController < ApplicationController
     if @items.empty?
       fail_message = 'tidak dapat menemukan item'
       fail_response(:not_found, fail_message)
+      return
     end
 
     serialized_items = ActiveModelSerializers::SerializableResource.new(@items,

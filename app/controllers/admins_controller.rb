@@ -12,8 +12,7 @@ class AdminsController < ApplicationController
 
   def show
     @admin = Admin.find(params[:id])
-    puts @admin.nil?
-    puts @admin
+
     if @admin.nil?
       fail_message = "admin dengan id #{params[:id]} tidak dapat ditemukan"
       fail_response(:not_found, fail_message)
