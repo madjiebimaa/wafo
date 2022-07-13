@@ -1,7 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
   belongs_to :role, polymorphic: true, optional: true
-  has_one :cart, through: :role
 
   validates :email, presence: true, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }

@@ -1,11 +1,16 @@
 class ItemsController < ApplicationController
-  before_action :is_customer
+  before_action :authorize_request
+  before_action :customer?, only: %i[index]
 
   def index
     @items = Item.all
 
-    if params[:name]
-      @items = @items.where(name: params[:name])
+    name = params[:name]
+    @items = @items.where(name: name) if name
+
+    if @items.empty?
+      fail_message = 'tidak dapat menemukan item'
+      fail_response(:not_found, fail_message)
     end
 
     serialized_items = ActiveModelSerializers::SerializableResource.new(@items,

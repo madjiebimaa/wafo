@@ -33,7 +33,8 @@ class UsersController < ApplicationController
       @current_user.as_admin(admin_params)
     when 'Customer'
       @current_user.as_customer(customer_params)
-      @current_user.role.create_cart(@current_user.role.id)
+      # @current_user.role.create_cart(@current_user.role.id)
+      Cart.create(customer_id: customer_id)
     when 'Merchant'
       @current_user.as_merchant(merchant_params)
     else

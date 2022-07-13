@@ -1,5 +1,6 @@
 class CartsController < ApplicationController
-  before_action :is_customer
+  before_action :authorize_request
+  before_action :customer?
   before_action :current_customer
 
   def add_item
